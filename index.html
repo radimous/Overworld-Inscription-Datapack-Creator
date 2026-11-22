@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Overworld Inscription Datapack Creator</title>
+    <style>
+      .sidebar-title-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .vhapi-label {
+        background-color: #ffcc00;
+        color: #000;
+        padding: 0.2em 0.5em;
+        border-radius: 0.2em;
+        font-size: 0.9em;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+      }
+      .vhapi-label img {
+        height: 1em;
+        width: 1em;
+        margin-right: 0.2em;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <aside id="sidebar">
+        <div class="sidebar-title-row">
+          <h1>Overworld Inscription Datapack Creator</h1>
+          <a class="vhapi-label" href="https://www.curseforge.com/minecraft/mc-mods/vault-hunters-api" target="_blank" rel="noopener noreferrer">
+            <img src="https://www.google.com/s2/favicons?domain=curseforge.com&sz=32" alt="" />
+            <span>Requires VHAPI</span>
+          </a>
+        </div>
+        <form id="datapack-form">
+          <h2>Datapack</h2>
+          <label class="field horizontal">
+            Datapack name
+            <input id="datapack-name" type="text" placeholder="my_structure" autocomplete="off" />
+          </label>
+          <label class="field">
+            Description
+            <textarea id="datapack-description" placeholder="A short description of this datapack" rows="3"></textarea>
+          </label>
+
+          <h2>Structure</h2>
+          <label class="field horizontal">
+            Namespace
+            <input id="namespace" type="text" placeholder="namespace" value="examplenamespace" autocomplete="off" />
+          </label>
+          <label class="field horizontal">
+            Structure ID
+            <input id="structure-id" type="text" value="structure" autocomplete="off" />
+          </label>
+
+          <h2>Inscription recipe</h2>
+          <label class="field horizontal">
+            Build name
+            <input id="build-name" type="text" value="Structure" autocomplete="off" />
+          </label>
+          <label class="field horizontal">
+            Creator (optional)
+            <input id="creator" type="text" placeholder="" autocomplete="off" />
+          </label>
+          <label class="field horizontal">
+            Title color
+            <input id="title-color" type="text" placeholder="#2F96C8" value="#2F96C8" autocomplete="off" />
+          </label>
+
+          <h2>Recipe ingredients</h2>
+          <div id="ingredient-list" class="ingredient-list">
+            <div class="ingredient-row">
+              <input class="ingredient-amount" type="text" inputmode="numeric" value="8" maxlength="5" aria-label="Ingredient amount" />
+              <input class="ingredient-item" type="text" value="the_vault:vault_gold" aria-label="Ingredient item ID" />
+              <button class="ingredient-delete" type="button" aria-label="Delete ingredient">Delete</button>
+            </div>
+            <div class="ingredient-row">
+              <input class="ingredient-amount" type="text" inputmode="numeric" value="4" maxlength="5" aria-label="Ingredient amount" />
+              <input class="ingredient-item" type="text" value="the_vault:inscription_piece" aria-label="Ingredient item ID" />
+              <button class="ingredient-delete" type="button" aria-label="Delete ingredient">Delete</button>
+            </div>
+            <div class="ingredient-row">
+              <input class="ingredient-amount" type="text" inputmode="numeric" value="64" maxlength="5" aria-label="Ingredient amount" />
+              <input class="ingredient-item" type="text" value="the_vault:gem_benitoite" aria-label="Ingredient item ID" />
+              <button class="ingredient-delete" type="button" aria-label="Delete ingredient">Delete</button>
+            </div>
+            <div class="ingredient-row">
+              <input class="ingredient-amount" type="text" inputmode="numeric" value="64" maxlength="5" aria-label="Ingredient amount" />
+              <input class="ingredient-item" type="text" value="the_vault:vault_essence" aria-label="Ingredient item ID" />
+              <button class="ingredient-delete" type="button" aria-label="Delete ingredient">Delete</button>
+            </div>
+          </div>
+          <button id="add-ingredient" class="add-ingredient" type="button">+</button>
+
+          <button id="download-btn" type="button" disabled>Download datapack</button>
+          <p id="download-hint" class="hint">Load a .nbt structure first</p>
+        </form>
+      </aside>
+      <section id="viewer-section">
+        <header>
+          <div id="controls">
+            <label id="upload-btn" for="file-input">Open .nbt file</label>
+            <input id="file-input" type="file" accept=".nbt" />
+            <label class="toggle"><input id="grid-toggle" type="checkbox" checked /> Grid</label>
+            <label class="toggle"><input id="invisible-toggle" type="checkbox" /> Show invisible blocks</label>
+            <label class="toggle"><input id="player-mode-toggle" type="checkbox" /> Player movement</label>
+          </div>
+        </header>
+        <main id="viewport" tabindex="0">
+          <canvas id="canvas"></canvas>
+          <div id="dropzone">
+            <p>Drop a <code>.nbt</code> structure file here</p>
+            <p class="hint">or click &ldquo;Open .nbt file&rdquo; above</p>
+            <span id="pending-file-name" class="pending-file-name"></span>
+            <button id="preview-btn" type="button" disabled>Load 3D preview</button>
+          </div>
+          <div id="status"></div>
+        </main>
+      </section>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
