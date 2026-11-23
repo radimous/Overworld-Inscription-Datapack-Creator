@@ -42,6 +42,7 @@ const downloadBtn = document.getElementById('download-btn') as HTMLButtonElement
 const previewBtn = document.getElementById('preview-btn') as HTMLButtonElement
 const playerModeToggle = document.getElementById('player-mode-toggle') as HTMLInputElement
 const pendingFileNameEl = document.getElementById('pending-file-name') as HTMLDivElement
+const validationWarning = document.getElementById('validation-warning') as HTMLDivElement
 
 const gl = canvas.getContext('webgl')
 if (!gl) {
@@ -616,14 +617,24 @@ function createIngredientRow(amount = 1, item = '') {
 	const itemInput = row.querySelector('.ingredient-item') as HTMLInputElement
 	amountInput.value = String(amount)
 	itemInput.value = item
-	row.querySelector('.ingredient-delete')!.addEventListener('click', () => row.remove())
+	row.querySelector('.ingredient-delete')!.addEventListener('click', () => {
+		row.remove()
+		updateValidationWarning()
+	})
+	itemInput.addEventListener('input', () => validateIngredientItem(itemInput))
+	itemInput.addEventListener('change', () => validateIngredientItem(itemInput))
 	ingredientList.append(row)
+	if (item) validateIngredientItem(itemInput)
+	else updateValidationWarning()
 }
 
 addIngredientButton.addEventListener('click', () => createIngredientRow())
 
 ingredientList.querySelectorAll('.ingredient-row').forEach(row => {
-	row.querySelector('.ingredient-delete')!.addEventListener('click', () => row.remove())
+	row.querySelector('.ingredient-delete')!.addEventListener('click', () => {
+		row.remove()
+		updateValidationWarning()
+	})
 	const itemInput = row.querySelector<HTMLInputElement>('.ingredient-item')
 	if (itemInput) {
 		itemInput.addEventListener('input', () => validateIngredientItem(itemInput))
@@ -653,6 +664,7 @@ function setInputValidity(input: HTMLInputElement, valid: boolean, message: stri
 	input.classList.toggle('invalid', !valid)
 	input.classList.remove('warning')
 	input.setAttribute('aria-invalid', String(!valid))
+	updateValidationWarning()
 }
 
 function validateNamespace(input: HTMLInputElement) {
@@ -685,6 +697,7 @@ function validateIngredientItem(input: HTMLInputElement) {
 	input.classList.toggle('warning', !known)
 	if (known) input.removeAttribute('title')
 	else input.title = 'This item ID is not in the temporary known-item list. It may come from another mod.'
+	updateValidationWarning()
 }
 
 function validateAllIds(): boolean {
@@ -721,4 +734,32 @@ fetch('/valid-item-ids.json')
 			validateIngredientItem(input)
 		}
 	})
-	.catch(error => console.warn('Could not load valid item IDs:', error))
+	.catch(error => {
+		console.warn('Could not load valid item IDs:', error)
+		updateValidationWarning()
+	})
+
+// Validation warning text
+function updateValidationWarning() {
+	const invalidInputs = Array.from(document.querySelectorAll<HTMLInputElement>('#datapack-form .invalid'))
+	const warningInputs = Array.from(document.querySelectorAll<HTMLInputElement>('#datapack-form .warning'))
+	const messages: string[] = []
+
+	if (invalidInputs.length > 0) {
+		messages.push('Something is wrong: check the highlighted fields.')
+	}
+	for (const input of warningInputs) {
+		messages.push(`Item "${input.value.trim()}" not found in the base Vault Hunters modpack.`)
+	}
+
+	validationWarning.textContent = messages.join(' ')
+	validationWarning.classList.toggle('has-warning', messages.length > 0)
+}
+
+// Re-validate and update warning text after catalog loading and ingredient changes
+ingredientList.addEventListener('input', () => {
+	updateValidationWarning()
+})
+window.addEventListener('load', () => {
+	updateValidationWarning()
+})

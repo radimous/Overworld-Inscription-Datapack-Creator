@@ -173,6 +173,22 @@ html, body {
   margin: 0.5rem 0 0;
 }
 
+#validation-warning {
+  display: none;
+  font-size: 0.8rem;
+  line-height: 1.35;
+  color: #d9b44a;
+  background: rgba(217, 180, 74, 0.08);
+  border: 1px solid rgba(217, 180, 74, 0.35);
+  border-radius: 6px;
+  margin: 0.75rem 0 0.5rem;
+  padding: 0.5rem 0.6rem;
+}
+
+#validation-warning.has-warning {
+  display: block;
+}
+
 #viewer-section {
   flex: 1;
   min-width: 0;
